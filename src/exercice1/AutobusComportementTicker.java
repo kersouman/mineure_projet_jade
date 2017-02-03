@@ -1,9 +1,9 @@
 package exercice1;
 
 import jade.core.Agent;
+import jade.core.behaviours.TickerBehaviour;
 
-public class AutobusComportementTicker 
-	extends jade.core.behaviours.TickerBehaviour {
+public class AutobusComportementTicker extends TickerBehaviour {
 
 	public AutobusComportementTicker(Agent a, long period) {
 		super(a, period);

@@ -2,7 +2,9 @@ package exercice1;
 
 import java.util.Random;
 
-public class AutobusComportement extends jade.core.behaviours.Behaviour {
+import jade.core.behaviours.Behaviour;
+
+public class AutobusComportement extends Behaviour {
 
 	@Override
 	public void action() {
@@ -26,6 +28,7 @@ public class AutobusComportement extends jade.core.behaviours.Behaviour {
 						+ arretCourant);
 				block(rand.nextInt(1000));
 			} else {
+				((Autobus)myAgent).send(((Autobus)myAgent).getMessage());
 				((Autobus)myAgent).setEtat(2);
 			}
 			break;
