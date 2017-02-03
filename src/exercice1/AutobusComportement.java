@@ -18,7 +18,7 @@ public class AutobusComportement extends jade.core.behaviours.Behaviour {
 		
 		case 1:
 			int arretCourant = ((Autobus)myAgent).getArretCourant();
-			if (arretCourant <= 100) {
+			if (arretCourant < ((Autobus)myAgent).getLongueurLigne()) {
 				arretCourant++;
 				((Autobus)myAgent).setArretCourant(arretCourant);
 				System.out.println(((Autobus)myAgent).getIdentifiant() 
@@ -26,7 +26,6 @@ public class AutobusComportement extends jade.core.behaviours.Behaviour {
 						+ arretCourant);
 				block(rand.nextInt(1000));
 			} else {
-				((Autobus)myAgent).setArretCourant(0);
 				((Autobus)myAgent).setEtat(2);
 			}
 			break;

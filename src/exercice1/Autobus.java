@@ -8,6 +8,7 @@ public class Autobus extends jade.core.Agent {
 	
 	private int identifiant = 0;
 	private int numeroLigne = 0;
+	private int longueurLigne = 0;
 	/*
 	 * arretCourant = 0 -> on est au dépôt
 	 * arretCourant > 0 -> on roule
@@ -24,12 +25,14 @@ public class Autobus extends jade.core.Agent {
 		this.identifiant = Autobus.CPT_AUTOBUS++;
 		Random rand = new Random();
 		this.numeroLigne = rand.nextInt(10);
+		this.longueurLigne = 100;
 	}
 	
 	public void setup() {
 		System.out.println("Je suis l'autobus " + this.identifiant);
 		System.out.println("Je roule sur la ligne " + this.numeroLigne);
 		this.addBehaviour(new AutobusComportement());
+		this.addBehaviour(new AutobusComportementTicker(this,1000));
 	}
 	
 	public void takeDown() {
@@ -43,6 +46,10 @@ public class Autobus extends jade.core.Agent {
 
 	public int getNumeroLigne() {
 		return numeroLigne;
+	}
+	
+	public int getLongueurLigne() {
+		return longueurLigne;
 	}
 
 	public int getArretCourant() {
