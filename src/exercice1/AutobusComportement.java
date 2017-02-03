@@ -4,6 +4,7 @@ import java.util.Random;
 
 import jade.core.behaviours.Behaviour;
 
+@SuppressWarnings("serial")
 public class AutobusComportement extends Behaviour {
 
 	@Override
@@ -28,7 +29,6 @@ public class AutobusComportement extends Behaviour {
 						+ arretCourant);
 				block(rand.nextInt(1000));
 			} else {
-				((Autobus)myAgent).send(((Autobus)myAgent).getMessage());
 				((Autobus)myAgent).setEtat(2);
 			}
 			break;
@@ -41,7 +41,8 @@ public class AutobusComportement extends Behaviour {
 
 	@Override
 	public boolean done() {
-		return ((Autobus)myAgent).getEtat() == 2;
+		return ((((Autobus)myAgent).getEtat() == 4)
+				&& ((Autobus)myAgent).getReponseEnvoyee());
 	}
 	
 	public int onEnd() {

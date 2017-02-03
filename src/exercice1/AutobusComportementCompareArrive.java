@@ -4,7 +4,8 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class AutobusComportementCyclique extends CyclicBehaviour {
+@SuppressWarnings("serial")
+public class AutobusComportementCompareArrive extends CyclicBehaviour {
 
 	@Override
 	public void action() {
@@ -14,9 +15,11 @@ public class AutobusComportementCyclique extends CyclicBehaviour {
 		if (message == null)
 			block();
 		else {
-			System.out.println(((Autobus)myAgent).getIdentifiant()
-					+ " : " + message.getSender().getName()
-					+ " est arrivé au dépôt");
+			if (((Autobus)myAgent).getEtat() >= 2)
+				myAgent.send(((Autobus)myAgent).getMessageMoi());
+			else
+				myAgent.send(((Autobus)myAgent).getMessageBravo());
+			((Autobus)myAgent).setReponseEnvoyee(true);
 		}
 	}
 

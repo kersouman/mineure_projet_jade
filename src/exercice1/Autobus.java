@@ -5,6 +5,7 @@ import java.util.Random;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
+@SuppressWarnings("serial")
 public class Autobus extends jade.core.Agent {
 	
 	private static int CPT_AUTOBUS = 0;
@@ -12,6 +13,7 @@ public class Autobus extends jade.core.Agent {
 	private int identifiant = 0;
 	private int numeroLigne = 0;
 	private int longueurLigne = 0;
+	private int score = 0;
 	/*
 	 * arretCourant = 0 -> on est au dépôt
 	 * arretCourant > 0 -> on roule
@@ -24,8 +26,11 @@ public class Autobus extends jade.core.Agent {
 	 */
 	private int etat = 0;
 	
+	private boolean reponseEnvoyee = false;
 	private AID idAutreBus = null;
-	private ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+	private ACLMessage messageArrive = new ACLMessage(ACLMessage.INFORM);
+	private ACLMessage messageBravo = new ACLMessage(ACLMessage.INFORM);
+	private ACLMessage messageMoi = new ACLMessage(ACLMessage.INFORM);
 	
 	public Autobus() {
 		this.identifiant = Autobus.CPT_AUTOBUS++;
@@ -34,7 +39,26 @@ public class Autobus extends jade.core.Agent {
 		this.longueurLigne = 20;
 	}
 	
-	public void setup() {
+	public void setup() {		
+		System.out.println("Je suis l'autobus " + this.identifiant);
+		System.out.println("Je roule sur la ligne " + this.numeroLigne);
+		
+		this.setIdAutreBus();
+		this.setMessages();
+		this.setComportements();
+	}
+	
+	private void setMessages() {
+		this.messageArrive.addReceiver(this.idAutreBus);
+		this.messageBravo.addReceiver(this.idAutreBus);
+		this.messageMoi.addReceiver(this.idAutreBus);
+		
+		this.messageArrive.setContent("Je suis arrivé");
+		this.messageBravo.setContent("Bravo");
+		this.messageMoi.setContent("Moi d'abord");
+	}
+	
+	private void setIdAutreBus() {
 		String nomAutreBus = this.getLocalName();
 		int longueur = nomAutreBus.length();
 		int numeroAutreBus = Integer.parseInt(nomAutreBus.substring(longueur-1));
@@ -42,21 +66,20 @@ public class Autobus extends jade.core.Agent {
 		numeroAutreBus = (numeroAutreBus%2) + 1;
 		nomAutreBus += numeroAutreBus;
 		this.idAutreBus = new AID(nomAutreBus, false);
-		
-		this.message.setContent("Je suis arrivé");
-		this.message.addReceiver(this.idAutreBus);
-		
-		System.out.println("Je suis l'autobus " + this.identifiant);
-		System.out.println("Je roule sur la ligne " + this.numeroLigne);
-		
+	}
+	
+	private void setComportements() {
 		this.addBehaviour(new AutobusComportement());
 		this.addBehaviour(new AutobusComportementTicker(this,1000));
-		this.addBehaviour(new AutobusComportementCyclique());
+		this.addBehaviour(new AutobusComportementCompareArrive());
+		this.addBehaviour(new AutobusComportementEnvoiArrive());
+
 	}
 	
 	public void takeDown() {
-		System.out.println("Je suis l'autobus " + this.identifiant +
-								" et je vais à la casse");
+		System.out.println("Je suis l'autobus " + this.identifiant
+				+ ", mon score est de " + this.score 
+				+ " et je vais à la casse");
 	}
 
 	public int getIdentifiant() {
@@ -71,12 +94,28 @@ public class Autobus extends jade.core.Agent {
 		return idAutreBus;
 	}
 	
-	public ACLMessage getMessage() {
-		return message;
+	public ACLMessage getMessageArrive() {
+		return messageArrive;
+	}
+	
+	public ACLMessage getMessageBravo() {
+		return messageBravo;
+	}
+	
+	public ACLMessage getMessageMoi() {
+		return messageMoi;
 	}
 	
 	public int getLongueurLigne() {
 		return longueurLigne;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+	
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 	public int getArretCourant() {
@@ -93,5 +132,13 @@ public class Autobus extends jade.core.Agent {
 
 	public void setEtat(int etat) {
 		this.etat = etat;
+	}
+	
+	public boolean getReponseEnvoyee() {
+		return reponseEnvoyee;
+	}
+	
+	public void setReponseEnvoyee(boolean reponseEnvoyee) {
+		this.reponseEnvoyee = reponseEnvoyee;
 	}
 }
