@@ -43,5 +43,10 @@ public class AutobusComportement extends Behaviour {
 	public boolean done() {
 		return ((Autobus)myAgent).getEtat() == 2;
 	}
+	
+	public int onEnd() {
+		myAgent.doDelete();
+		return super.onEnd();
+	}
 
 }
