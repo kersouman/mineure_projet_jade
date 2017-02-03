@@ -1,10 +1,13 @@
 package exercice1;
 
+import java.util.Random;
+
 public class AutobusComportement extends jade.core.behaviours.Behaviour {
 
 	@Override
 	public void action() {
-		// Si on est au dépôt, on se met dans l'état EN_ROUTE
+		Random rand = new Random();
+	
 		switch(((Autobus)myAgent).getEtat()) {
 		
 		case 0:
@@ -21,6 +24,7 @@ public class AutobusComportement extends jade.core.behaviours.Behaviour {
 				System.out.println(((Autobus)myAgent).getIdentifiant() 
 						+ " : Je suis à l'arrêt "
 						+ arretCourant);
+				block(rand.nextInt(1000));
 			} else {
 				((Autobus)myAgent).setArretCourant(0);
 				((Autobus)myAgent).setEtat(2);
