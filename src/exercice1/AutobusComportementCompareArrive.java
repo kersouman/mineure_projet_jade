@@ -15,11 +15,21 @@ public class AutobusComportementCompareArrive extends CyclicBehaviour {
 		if (message == null)
 			block();
 		else {
-			if (((Autobus)myAgent).getEtat() >= 2)
-				myAgent.send(((Autobus)myAgent).getMessageMoi());
-			else
-				myAgent.send(((Autobus)myAgent).getMessageBravo());
-			((Autobus)myAgent).setReponseEnvoyee(true);
+			if (((Autobus)myAgent).getEtat() >= 2) {
+				ACLMessage reponseMoi = new ACLMessage(ACLMessage.INFORM);
+				reponseMoi.setContent("Moi d'abord");
+				reponseMoi.addReceiver(message.getSender());
+				myAgent.send(reponseMoi);
+				((Autobus)myAgent).setCompteurReponse(
+						((Autobus)myAgent).getCompteurReponse()-1);
+			} else {
+				ACLMessage reponseBravo = new ACLMessage(ACLMessage.INFORM);
+				reponseBravo.setContent("Bravo");
+				reponseBravo.addReceiver(message.getSender());
+				myAgent.send(reponseBravo);
+				((Autobus)myAgent).setCompteurReponse(
+						((Autobus)myAgent).getCompteurReponse()-1);
+			}
 		}
 	}
 

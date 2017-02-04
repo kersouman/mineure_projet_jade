@@ -12,7 +12,16 @@ public class AutobusComportementEnvoiArrive extends Behaviour {
 
 		switch(((Autobus)myAgent).getEtat()) {
 		case 2:
-			myAgent.send(((Autobus)myAgent).getMessageArrive());
+			for (int i = 0; i < ((Autobus)myAgent).getAutresBus().length; i++) {
+				if(!((Autobus)myAgent).getAutresBus()[i].getName().equals(
+						((Autobus)myAgent).getAID())) {
+					ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+					message.setContent("Je suis arrivé");
+					message.addReceiver(
+							((Autobus)myAgent).getAutresBus()[i].getName());
+					myAgent.send(message);
+				}
+			}
 			((Autobus)myAgent).setEtat(3);
 			break;
 		case 3:
@@ -21,23 +30,32 @@ public class AutobusComportementEnvoiArrive extends Behaviour {
 							new FiltreReponse()));
 			if (message == null)
 				block();
-			else if(message.getContent().equals(
-					((Autobus)myAgent).getMessageBravo().getContent())) {
-				((Autobus)myAgent).setScore(1);
-				((Autobus)myAgent).setEtat(4);
-			} else if(message.getContent().equals(
-					((Autobus)myAgent).getMessageMoi().getContent())) {
-				((Autobus)myAgent).setEtat(4);
+			else if(message.getContent().equals("Bravo")) {
+				((Autobus)myAgent).setScore(((Autobus)myAgent).getScore()+1);
+				((Autobus)myAgent).setCompteurAutresBus(
+						((Autobus)myAgent).getCompteurAutresBus()-1);
+					if(((Autobus)myAgent).getCompteurAutresBus() == 0) {
+						((Autobus)myAgent).setEtat(4);
+					}
+			} else if(message.getContent().equals("Moi d'abord")) {
+				((Autobus)myAgent).setCompteurAutresBus(
+						((Autobus)myAgent).getCompteurAutresBus()-1);
+				if(((Autobus)myAgent).getCompteurAutresBus() == 0) {
+					((Autobus)myAgent).setEtat(4);
+				}
 			}
+			break;
+		default:
 			break;
 		}
 	}
 
 	@Override
 	public boolean done() {
-		if(((Autobus)myAgent).getEtat() == 4)
+		if(((Autobus)myAgent).getEtat() == 4) {
 			return true;
-			
+		}
+		
 		return false;
 	}
 

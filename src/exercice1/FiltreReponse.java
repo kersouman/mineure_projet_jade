@@ -10,7 +10,6 @@ public class FiltreReponse implements MatchExpression {
 		if(message.getPerformative() == ACLMessage.INFORM &&
 				(message.getContent().equals("Moi d'abord")
 						|| message.getContent().equals("Bravo"))) {
-			System.out.println("J'ai eu une réponse");
 			return true;
 		}
 		

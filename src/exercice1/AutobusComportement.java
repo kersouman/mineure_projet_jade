@@ -42,7 +42,7 @@ public class AutobusComportement extends Behaviour {
 	@Override
 	public boolean done() {
 		return ((((Autobus)myAgent).getEtat() == 4)
-				&& ((Autobus)myAgent).getReponseEnvoyee());
+				&& (((Autobus)myAgent).getCompteurReponse() == 0));
 	}
 	
 	public int onEnd() {

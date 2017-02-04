@@ -2,8 +2,10 @@ package exercice1;
 
 import java.util.Random;
 
-import jade.core.AID;
-import jade.lang.acl.ACLMessage;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 @SuppressWarnings("serial")
 public class Autobus extends jade.core.Agent {
@@ -25,12 +27,9 @@ public class Autobus extends jade.core.Agent {
 	 * etat = 2 -> au dépôt après en route
 	 */
 	private int etat = 0;
-	
-	private boolean reponseEnvoyee = false;
-	private AID idAutreBus = null;
-	private ACLMessage messageArrive = new ACLMessage(ACLMessage.INFORM);
-	private ACLMessage messageBravo = new ACLMessage(ACLMessage.INFORM);
-	private ACLMessage messageMoi = new ACLMessage(ACLMessage.INFORM);
+	private int compteurAutresBus = -1;
+	private int compteurReponse = -1;
+	private DFAgentDescription[] autresBus = null;
 	
 	public Autobus() {
 		this.identifiant = Autobus.CPT_AUTOBUS++;
@@ -43,29 +42,40 @@ public class Autobus extends jade.core.Agent {
 		System.out.println("Je suis l'autobus " + this.identifiant);
 		System.out.println("Je roule sur la ligne " + this.numeroLigne);
 		
-		this.setIdAutreBus();
-		this.setMessages();
+		this.setDescriptionService();
+		this.setAutresBus();
 		this.setComportements();
 	}
 	
-	private void setMessages() {
-		this.messageArrive.addReceiver(this.idAutreBus);
-		this.messageBravo.addReceiver(this.idAutreBus);
-		this.messageMoi.addReceiver(this.idAutreBus);
+	private void setDescriptionService() {
+		ServiceDescription sd = new ServiceDescription();
+		sd.setName("Bus" + this.identifiant);
+		sd.setType("Bus");
 		
-		this.messageArrive.setContent("Je suis arrivé");
-		this.messageBravo.setContent("Bravo");
-		this.messageMoi.setContent("Moi d'abord");
+		DFAgentDescription dfad = new DFAgentDescription();
+		dfad.setName(this.getAID());
+		dfad.addServices(sd);
+		
+		try {
+			DFService.register(this, dfad);
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private void setIdAutreBus() {
-		String nomAutreBus = this.getLocalName();
-		int longueur = nomAutreBus.length();
-		int numeroAutreBus = Integer.parseInt(nomAutreBus.substring(longueur-1));
-		nomAutreBus = nomAutreBus.substring(0, longueur-1);
-		numeroAutreBus = (numeroAutreBus%2) + 1;
-		nomAutreBus += numeroAutreBus;
-		this.idAutreBus = new AID(nomAutreBus, false);
+	private void setAutresBus() {
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("Bus");
+		DFAgentDescription dfad = new DFAgentDescription();
+		dfad.addServices(sd);
+
+		try {
+			this.autresBus = DFService.search(this,dfad);
+		} catch(FIPAException e) {
+			e.printStackTrace();
+		}
+		this.setCompteurAutresBus(this.autresBus.length-1);
+		this.setCompteurReponse(autresBus.length-1);
 	}
 	
 	private void setComportements() {
@@ -73,7 +83,6 @@ public class Autobus extends jade.core.Agent {
 		this.addBehaviour(new AutobusComportementTicker(this,1000));
 		this.addBehaviour(new AutobusComportementCompareArrive());
 		this.addBehaviour(new AutobusComportementEnvoiArrive());
-
 	}
 	
 	public void takeDown() {
@@ -89,23 +98,7 @@ public class Autobus extends jade.core.Agent {
 	public int getNumeroLigne() {
 		return numeroLigne;
 	}
-	
-	public AID getIdAutreBus() {
-		return idAutreBus;
-	}
-	
-	public ACLMessage getMessageArrive() {
-		return messageArrive;
-	}
-	
-	public ACLMessage getMessageBravo() {
-		return messageBravo;
-	}
-	
-	public ACLMessage getMessageMoi() {
-		return messageMoi;
-	}
-	
+
 	public int getLongueurLigne() {
 		return longueurLigne;
 	}
@@ -134,11 +127,24 @@ public class Autobus extends jade.core.Agent {
 		this.etat = etat;
 	}
 	
-	public boolean getReponseEnvoyee() {
-		return reponseEnvoyee;
+	public int getCompteurAutresBus() {
+		return compteurAutresBus;
 	}
 	
-	public void setReponseEnvoyee(boolean reponseEnvoyee) {
-		this.reponseEnvoyee = reponseEnvoyee;
+	public void setCompteurAutresBus(int compteurAutresBus) {
+		this.compteurAutresBus = compteurAutresBus;
 	}
+
+	public int getCompteurReponse() {
+		return compteurReponse;
+	}
+	
+	public void setCompteurReponse(int compteurReponse) {
+		this.compteurReponse = compteurReponse;
+	}
+	
+	public DFAgentDescription[] getAutresBus() {
+		return autresBus;
+	}
+	
 }
